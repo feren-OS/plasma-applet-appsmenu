@@ -51,7 +51,6 @@ Item {
 
     function switchToInitial() {
         root.state = "Normal";
-        tabBar.currentIndex = 0;
         header.query = ""
         keyboardNavigation.state = "LeftColumn"
         navigationMethod.state = "mouse"
@@ -137,24 +136,13 @@ Item {
         clip: true
         PlasmaComponents.TabGroup {
             id: mainTabGroup
-            currentTab: tabBar.currentIndex == 0 ? applicationsGroupPage : placesPage
+            currentTab: applicationsGroupPage
 
             anchors.fill: parent
 
             //pages
             ApplicationsGroupView {
                 id: applicationsGroupPage
-            }
-
-            Loader {
-                id: placesPage
-                active: mainTabGroup.currentTab == placesPage
-                source: Qt.resolvedUrl("PlacesView.qml")
-
-                // we want to keep pages always loaded to keep animations nice
-                onLoaded: {
-                    active = true
-                }
             }
 
             state: {
@@ -184,18 +172,6 @@ Item {
                         location: PlasmaExtras.PlasmoidHeading.Location.Footer
                     }
                     AnchorChanges {
-                        target: footer
-                        anchors {
-                            top: root.top
-                            bottom: undefined
-                        }
-                    }
-                    PropertyChanges {
-                        target: footer
-                        height: footer.implicitHeight
-                        location: PlasmaExtras.PlasmoidHeading.Location.Header
-                    }
-                    AnchorChanges {
                         target: ignoreArea
                         anchors {
                             top: root.top
@@ -205,22 +181,15 @@ Item {
                     AnchorChanges {
                         target: mainArea
                         anchors {
-                            top: footer.bottom
+                            top: root.top
                             bottom: header.top
                         }
                     }
                     AnchorChanges {
                         target: contentArea
                         anchors {
-                            top: footer.bottom
+                            top: parent.top
                             bottom: header.top
-                        }
-                    }
-                    PropertyChanges {
-                        target: tabBar
-                        anchors {
-                            topMargin: footer.topInset
-                            bottomMargin: -footer.bottomPadding
                         }
                     }
                 },
@@ -239,18 +208,6 @@ Item {
                         location: PlasmaExtras.PlasmoidHeading.Location.Header
                     }
                     AnchorChanges {
-                        target: footer
-                        anchors {
-                            top: undefined
-                            bottom: root.bottom
-                        }
-                    }
-                    PropertyChanges {
-                        target: footer
-                        height: footer.implicitHeight
-                        location: PlasmaExtras.PlasmoidHeading.Location.Footer
-                    }
-                    AnchorChanges {
                         target: ignoreArea
                         anchors {
                             top: header.bottom
@@ -261,21 +218,14 @@ Item {
                         target: mainArea
                         anchors {
                             top: header.bottom
-                            bottom: footer.top
+                            bottom: root.bottom
                         }
                     }
                     AnchorChanges {
                         target: contentArea
                         anchors {
                             top: header.bottom
-                            bottom: footer.top
-                        }
-                    }
-                    PropertyChanges {
-                        target: tabBar
-                        anchors {
-                            topMargin: -footer.topPadding
-                            bottomMargin: footer.bottomInset
+                            bottom: parent.bottom
                         }
                     }
                 }
@@ -298,32 +248,6 @@ Item {
         }
     }
 
-    Connections {
-        target: placesPage.item
-        function onSectionTrigger(index) {
-            placesContentPage.currentIndex = index;
-        }
-    }
-
-    // we make our model ourselves
-    ListModel {
-        id: placesViewModel
-        signal trigger(int index)
-
-        function getI18nName(index) {
-            switch(index) {
-                case 0: return i18n("Computer");
-                case 1: return i18n("History");
-                case 2: return i18n("Frequently Used");
-                default: return ""
-            }
-        }
-
-        ListElement { filename: "ComputerView.qml"; decoration: "computer-laptop"; managesChildrenOutside: true }
-        ListElement { filename: "RecentlyUsedView.qml"; decoration: "view-history"; managesChildrenOutside: true }
-        ListElement { filename: "FrequentlyUsedView.qml"; decoration: "clock"; managesChildrenOutside: true }
-    }
-
     Item {
         id: contentArea
         anchors.left: parent.left
@@ -334,7 +258,7 @@ Item {
             id: contentTabGroup
             property bool isFavorites: true
             property Item currentItem: currentTab == searchPage ? searchPage : currentTab.currentItem
-            currentTab: root.state == "Search" ? searchPage : mainTabGroup.currentTab == applicationsGroupPage ? applicationsContentPage : placesContentPage
+            currentTab: root.state == "Search" ? searchPage : applicationsContentPage
 
             onCurrentItemChanged: {
                 if (root.currentContentView) {
@@ -369,34 +293,6 @@ Item {
                 }
             }
 
-            // this allows us to track/set index without having to worry about presentation
-            Item {
-                id: placesContentPage
-                property int currentIndex: -1
-                property Item currentItem: placesRepeater.itemAt(currentIndex)
-                Repeater {
-                    id: placesRepeater
-                    model: placesViewModel
-                    delegate: Loader {
-                        // so we don't load immediately
-                        active: contentTabGroup.currentTab == placesContentPage && visible
-                        visible: placesContentPage.currentIndex == index
-                        source: Qt.resolvedUrl(filename)
-                        anchors.fill: parent
-
-                        // we don't want to load/unload constantly because it's performance heavy
-                        onLoaded: {
-                            active = true
-                        }
-                    }
-                    onItemAdded: {
-                        if (index == 0) {
-                            parent.currentIndex = 0
-                        }
-                    }
-                }
-            }
-
             Loader {
                 id: searchPage
                 active: root.state == "Search"
@@ -408,93 +304,6 @@ Item {
                 }
             }
         } // contentTabGroup
-    }
-    PlasmaExtras.PlasmoidHeading {
-        id: footer
-
-        implicitHeight: (footer.opacity == 0) ? 0 : Math.round(PlasmaCore.Units.gridUnit * 2.5)
-
-        anchors.left: parent.left
-        anchors.right: parent.right
-
-        Behavior on height {
-            NumberAnimation {
-                duration: PlasmaCore.Units.longDuration
-                easing.type: Easing.InQuad
-            }
-            enabled: plasmoid.expanded
-        }
-
-        PC3.TabBar {
-            id: tabBar
-            anchors.fill: parent
-            anchors.rightMargin: Math.round(parent.width/1.5)
-            onCurrentIndexChanged: {
-                header.input.forceActiveFocus();
-                keyboardNavigation.state = "LeftColumn"
-                root.currentView.listView.positionAtBeginning();
-            }
-
-            PC3.TabButton {
-                id: applicationButton
-                implicitHeight: parent.height
-                icon.width: PlasmaCore.Units.iconSizes.smallMedium
-                icon.height: PlasmaCore.Units.iconSizes.smallMedium
-                icon.name: "applications-other"
-                text: i18n("Applications")
-                hoverEnabled: plasmoid.configuration.switchTabsOnHover
-                onHoveredChanged: {
-                    if (hovered) {
-                        tabBar.currentIndex = PC3.TabBar.index
-                    }
-                }
-                Keys.onPressed: {
-                    // On back tab focus on right pane
-                    if (event.key == Qt.Key_Backtab) {
-                        if (mainTabGroup.state == "top") {
-                            header.configureButton.forceActiveFocus(Qt.TabFocusReason)
-                        } else {
-                            navigationMethod.state = "keyboard"
-                            keyboardNavigation.state = "RightColumn"
-                            root.currentContentView.forceActiveFocus()
-                        }
-                        event.accepted = true;
-                        return;
-                    }
-                }
-            }
-            PC3.TabButton {
-                id: computerButton
-                icon.width: PlasmaCore.Units.iconSizes.smallMedium
-                icon.height: PlasmaCore.Units.iconSizes.smallMedium
-                icon.name: "compass"
-                text: i18n("Places") //Explore?
-                hoverEnabled: plasmoid.configuration.switchTabsOnHover
-                onHoveredChanged: {
-                    if (hovered) {
-                        tabBar.currentIndex = PC3.TabBar.index
-                    }
-                }
-            }
-            position: {
-                switch (plasmoid.location) {
-                case PlasmaCore.Types.TopEdge:
-                case PlasmaCore.Types.LeftEdge:
-                case PlasmaCore.Types.RightEdge:
-                    return PC3.TabBar.Header;
-                default:
-                    return PC3.TabBar.Footer;
-                }
-            }
-
-            Connections {
-                target: plasmoid
-                function onExpandedChanged() {
-                    header.input.forceActiveFocus();
-                    switchToInitial();
-                }
-            }
-        } // tabBar
     }
 
     // The cursor often passes over the sidebar while moving towards the main list, causing the view to change unintentionally.
@@ -622,14 +431,6 @@ Item {
         return;
     }
     Keys.onPressed: {
-        // switch tabs on CTRL+Tab (and CTRL+Shift+Tab)
-        if ((event.key == Qt.Key_Tab || event.key == Qt.Key_Backtab) && (event.modifiers & Qt.ControlModifier)) {
-            // only 2 tabs so no need to handle Shift
-            tabBar.currentIndex = !tabBar.currentIndex
-            event.accepted = true;
-            return;
-        }
-
         // handle tab navigation for main columns
         if (event.key == Qt.Key_Tab) {
             navigationMethod.state = "keyboard"
@@ -670,8 +471,8 @@ Item {
                 return;
             }
         }
-        var headerUpFooterDown = (event.key == Qt.Key_Down && footer.activeFocus) || (event.key == Qt.Key_Up && header.activeFocus)
-        var headerDownFooterUp = (event.key == Qt.Key_Down && header.activeFocus) || (event.key == Qt.Key_Up && footer.activeFocus)
+        var headerUpFooterDown = (event.key == Qt.Key_Up && header.activeFocus)
+        var headerDownFooterUp = (event.key == Qt.Key_Down && header.activeFocus)
         // Don't react on down presses with active footer or up presses with active header (this is inverse when upside down)
         if ((mainTabGroup.state == "bottom" && headerUpFooterDown) || (mainTabGroup.state == "top" && headerDownFooterUp)) {
             return;
@@ -700,19 +501,13 @@ Item {
                 // Focus on header when reaching the beginning of the list/grid
                 if (keyboardNavigation.state == "LeftColumn" && root.state != "Search") {
                     if (!root.currentView.keyNavUp()) {
-                        if (mainTabGroup.state == "top") {
-                            tabBar.currentItem.forceActiveFocus(Qt.TabFocusReason);
-                        } else {
+                        if (!mainTabGroup.state == "top") {
                             header.forceActiveFocus();
                         }
                     }
                 } else {
                     if (!root.currentContentView.keyNavUp()) {
-                        if (mainTabGroup.state == "top") {
-                            if (root.state != "Search") {
-                                tabBar.currentItem.forceActiveFocus(Qt.TabFocusReason);
-                            }
-                        } else {
+                        if (!mainTabGroup.state == "top") {
                             header.forceActiveFocus();
                         }
                     }
@@ -726,17 +521,12 @@ Item {
                     if (!root.currentView.keyNavDown()) {
                         if (mainTabGroup.state == "top") {
                             header.forceActiveFocus();
-                        } else {
-                            // forces activeFocus visuals
-                            tabBar.currentItem.forceActiveFocus(Qt.TabFocusReason);
                         }
                     }
                 } else {
                     if (!root.currentContentView.keyNavDown()) {
                         if (mainTabGroup.state == "top") {
                             header.forceActiveFocus();
-                        } else if (root.state != "Search") {
-                            tabBar.currentItem.forceActiveFocus(Qt.TabFocusReason);
                         }
                     }
                 }
@@ -812,25 +602,12 @@ Item {
         State {
             name: "Normal"
             PropertyChanges {
-                target: footer
-                //Set the opacity and NOT the visibility, as visibility is recursive
-                //and this binding would be executed also on popup show/hide
-                //as recommended by the docs: https://doc.qt.io/qt-5/qml-qtquick-item.html#visible-prop
-                //plus, it triggers https://bugreports.qt.io/browse/QTBUG-66907
-                //in which a mousearea may think it's under the mouse while it isn't
-                opacity: 1
-            }
-            PropertyChanges {
                 target: mainArea
                 opacity: 1
             }
         },
         State {
             name: "Search"
-            PropertyChanges {
-                target: footer
-                opacity: 0
-            }
             PropertyChanges {
                 target: mainArea
                 opacity: 0
