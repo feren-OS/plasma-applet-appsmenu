@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0)
 
 project(plasma-desktop)
 
-set(PROJECT_VERSION "5.21.80")
+set(PROJECT_VERSION "5.21.00")
 set(PROJECT_VERSION_MAJOR 5)
 
 set(QT_MIN_VERSION "5.15.0")
@@ -60,24 +60,6 @@ find_package(KF5 ${KF5_MIN_VERSION} REQUIRED COMPONENTS
     Wallet
     WidgetsAddons
 )
-
-find_package(AccountsQt5 ${ACCOUNTSQT_DEP_VERSION} CONFIG)
-set_package_properties(AccountsQt5 PROPERTIES DESCRIPTION "Accounts management library for Qt applications"
-   URL "https://gitlab.com/accounts-sso/libaccounts-qt"
-   TYPE OPTIONAL
-   PURPOSE "Required for building the OpenDesktop integration plugin")
-
-find_package(KAccounts 20.04)
-set_package_properties(KAccounts PROPERTIES DESCRIPTION "Accounts management library for KDE applications"
-   TYPE OPTIONAL
-   PURPOSE "Required for building the OpenDesktop integration plugin")
-
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(SignOnOAuth2 IMPORTED_TARGET signon-oauth2plugin)
-set_package_properties(signon-oauth2plugin PROPERTIES DESCRIPTION "Plugin for SignOnQt5 which handles OAuth and OAuth2 logins"
-   URL "https://gitlab.com/accounts-sso/signon-plugin-oauth2"
-   TYPE RUNTIME
-   PURPOSE "Required for running the OpenDesktop integration plugin")
 
 find_package(KF5Kirigami2 ${KF5_MIN_VERSION} CONFIG)
 set_package_properties(KF5Kirigami2 PROPERTIES
@@ -193,24 +175,7 @@ plasma_install_package(desktoppackage org.kde.plasma.desktop shells shell)
 
 add_definitions(-DQT_NO_URL_CAST_FROM_STRING)
 
-add_subdirectory(layout-templates)
-
-add_subdirectory(doc)
-add_subdirectory(runners)
-add_subdirectory(containments)
-add_subdirectory(toolboxes)
 add_subdirectory(applets)
-add_subdirectory(kcms)
-add_subdirectory(knetattach)
-if(KAccounts_FOUND AND AccountsQt5_FOUND)
-    add_subdirectory(attica-kde)
-endif()
-add_subdirectory(imports/activitymanager/)
-add_subdirectory(solid-device-automounter)
-if(X11_Xkb_FOUND AND XCB_XKB_FOUND)
-    add_subdirectory(kaccess)
-endif()
-install(FILES org.kde.plasmashell.metainfo.xml DESTINATION ${KDE_INSTALL_METAINFODIR})
 
 # add clang-format target for all our real source files
 file(GLOB_RECURSE ALL_CLANG_FORMAT_SOURCE_FILES *.cpp *.h)
