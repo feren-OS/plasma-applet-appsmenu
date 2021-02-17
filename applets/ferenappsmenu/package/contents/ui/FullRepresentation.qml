@@ -70,10 +70,10 @@ Item {
 
         appletInterface: plasmoid
 
-        flat: false
+        flat: true
         sorted: plasmoid.configuration.alphaSort
         showSeparators: false
-        showTopLevelItems: true
+        showTopLevelItems: false
 
         showAllApps: true
         showAllAppsCategorized: false
