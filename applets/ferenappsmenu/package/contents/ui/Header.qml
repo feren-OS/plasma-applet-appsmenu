@@ -158,13 +158,13 @@ PlasmaExtras.PlasmoidHeading {
         }
         delegate: PlasmaComponents.MenuItem {
             text: model.display
-            icon: model.decoration
             visible: !String(plasmoid.configuration.systemFavorites).includes(model.favoriteId)
 
             onClicked: systemModel.trigger(index, "", "")
         }
     }
     
+    //TODO: Figure out keyboard hotkeys for this later - refer to LeaveButtons.qml
     Keys.onPressed: {
         // On tab focus on left pane (or search when searching)
         if (event.key == Qt.Key_Tab) {
