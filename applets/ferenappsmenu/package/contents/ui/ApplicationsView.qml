@@ -1,8 +1,10 @@
 /*
     Copyright (C) 2011  Martin Gräßlin <mgraesslin@kde.org>
-    Copyright (C) 2012  Gregor Taetzner <gregor@freenet.de>
+    Copyright (C) 2012 Marco Martin <mart@kde.org>
     Copyright 2014 Sebastian Kügler <sebas@kde.org>
     Copyright (C) 2015-2018  Eike Hein <hein@kde.org>
+    Copyright (C) 2016 Jonathan Liu <net147@gmail.com>
+    Copyright (C) 2016 Kai Uwe Broulik <kde@privat.broulik.de>
     Copyright (C) 2021 by Mikel Johnson <mikel5764@gmail.com>
 
     This program is free software; you can redistribute it and/or modify
@@ -30,43 +32,29 @@ FocusScope {
     signal appModelChange()
     onAppModelChange: {
         if (activatedSection != null) {
-            applicationsView.clearBreadcrumbs();
-            applicationsView.listView.model = activatedSection;
+            applicationsView.gridView.model = activatedSection;
         }
     }
 
-    objectName: "ApplicationsView"
+    objectName: "ApplicationsGridView"
 
-    property ListView listView: applicationsView.listView
+    property GridView gridView: applicationsView.gridView
 
-    function keyNavUp() {
-        return applicationsView.keyNavUp();
-    }
-
-    function keyNavDown() {
-        return applicationsView.keyNavDown();
-    }
+    function keyNavLeft() { return applicationsView.keyNavLeft() }
+    function keyNavRight() { return applicationsView.keyNavRight() }
+    function keyNavUp() { return applicationsView.keyNavUp() }
+    function keyNavDown() { return applicationsView.keyNavDown() }
 
     function activateCurrentIndex() {
-        applicationsView.state = "OutgoingLeft";
+        applicationsView.currentItem.activate();
     }
 
     function openContextMenu() {
         applicationsView.currentItem.openActionMenu();
     }
 
-    function deactivateCurrentIndex() {
-        if (crumbModel.count > 0) { // this is not the case when switching from the right sidebar to the left when going "left"
-            breadcrumbsElement.children[crumbModel.count-1].clickCrumb();
-            applicationsView.state = "OutgoingRight";
-            return true;
-        }
-        return false;
-    }
-
     function reset() {
         applicationsView.model = activatedSection;
-        applicationsView.clearBreadcrumbs();
         if (applicationsView.model == null) {
             applicationsView.currentIndex = -1
         } else {
@@ -79,247 +67,96 @@ FocusScope {
         updatedLabelTimer.running = true;
     }
 
+    // QQuickItem::isAncestorOf is not invokable...
+    function isChildOf(item, parent) {
+        if (!item || !parent) {
+            return false;
+        }
+
+        if (item.parent === parent) {
+            return true;
+        }
+
+        return isChildOf(item, item.parent);
+    }
+    DropArea {
+        anchors.fill: parent
+        enabled: plasmoid.immutability !== PlasmaCore.Types.SystemImmutable
+
+        function syncTarget(drag) {
+            if (applicationsView.animating) {
+                return;
+            }
+
+            var pos = mapToItem(gridView.contentItem, drag.x, drag.y);
+            var above = gridView.itemAt(pos.x, pos.y);
+
+            var source = kickoff.dragSource;
+
+            if (above && above !== source && isChildOf(source, applicationsView)) {
+                applicationsView.model.moveRow(source.itemIndex, above.itemIndex);
+                // itemIndex changes directly after moving,
+                // we can just set the currentIndex to it then.
+                applicationsView.currentIndex = source.itemIndex;
+            }
+        }
+
+        onPositionChanged: syncTarget(drag)
+        onEntered: syncTarget(drag)
+    }
+
+    Transition {
+        id: moveTransition
+        SequentialAnimation {
+            PropertyAction { target: applicationsView; property: "animating"; value: true }
+
+            NumberAnimation {
+                duration: applicationsView.animationDuration
+                properties: "x, y"
+                easing.type: Easing.OutQuad
+            }
+
+            PropertyAction { target: applicationsView; property: "animating"; value: false }
+        }
+    }
+
     Connections {
         target: plasmoid
         function onExpandedChanged() {
             if (!plasmoid.expanded) {
-                reset();
+                applicationsView.currentIndex = 0;
             }
         }
     }
-    Connections {
-        target: rootBreadcrumb
-        function onRootClick() {
-            applicationsView.newModel = activatedSection;
-        }
-    }
-    Item {
-        id: crumbContainer
 
-        anchors {
-            top: parent.top
-            left: parent.left
-            right: parent.right
-        }
-        visible: applicationsView.model != null && applicationsView.model.description && applicationsView.model.description != "KICKER_ALL_MODEL"
-        height: visible ? breadcrumbFlickable.height : 0
-
-        Behavior on opacity {
-            NumberAnimation {
-                duration: PlasmaCore.Units.longDuration
-                easing.type: Easing.InOutQuad
-            }
-        }
-
-        PlasmaCore.SvgItem {
-            id: horizontalSeparator
-            opacity: applicationsView.listView.contentY !== 0
-            height: PlasmaCore.Units.devicePixelRatio
-            elementId: "horizontal-line"
-            z: 1
-
-            anchors {
-                left: parent.left
-                leftMargin: PlasmaCore.Units.smallSpacing * 4
-                right: parent.right
-                rightMargin: PlasmaCore.Units.smallSpacing * 4
-                bottom: parent.bottom
-            }
-
-            Behavior on opacity {
-                NumberAnimation {
-                    duration: PlasmaCore.Units.shortDuration
-                    easing.type: Easing.InOutQuad
-                }
-            }
-
-            svg: PlasmaCore.Svg {
-                imagePath: "widgets/line"
-            }
-        }
-
-        Flickable {
-            id: breadcrumbFlickable
-            anchors {
-                top: parent.top
-                left: parent.left
-                right: parent.right
-            }
-            height: breadcrumbsElement.height
-            boundsBehavior: Flickable.StopAtBounds
-
-            contentWidth: breadcrumbsElement.width
-            pixelAligned: true
-
-            // HACK: Align the content to right for RTL locales
-            leftMargin: LayoutMirroring.enabled ? Math.max(0, width - contentWidth) : 0
-
-            Row {
-                id: breadcrumbsElement
-
-                spacing: PlasmaCore.Units.smallSpacing * 2
-
-                Breadcrumb {
-                    id: rootBreadcrumb
-                    root: true
-                    text: rootBreadcrumbName
-                    depth: 0
-                }
-                Repeater {
-                    model: ListModel {
-                        id: crumbModel
-                        // Array of the models
-                        property var models: []
-                    }
-
-                    Breadcrumb {
-                        root: false
-                        text: model.text
-                    }
-                }
-                onWidthChanged: {
-                    if (LayoutMirroring.enabled) {
-                        breadcrumbFlickable.contentX = -Math.max(0, breadcrumbsElement.width - breadcrumbFlickable.width)
-                    } else {
-                        breadcrumbFlickable.contentX = Math.max(0, breadcrumbsElement.width - breadcrumbFlickable.width)
-                    }
-                }
-            }
-        } // Flickable
-    } // crumbContainer
-
-    KickoffListView {
+    KickoffGridView {
         id: applicationsView
-        anchors {
-            top: crumbContainer.bottom
-            bottom: parent.bottom
-        }
 
-        width: parent.width
-
-        property Item activatedItem: null
-        property var newModel: null
-
-        section.property: model && model.description == "KICKER_ALL_MODEL" ? "display" : ""
-        section.criteria: ViewSection.FirstCharacter
-
-        Behavior on opacity {
-            NumberAnimation {
-                duration: PlasmaCore.Units.longDuration
-                easing.type: Easing.InOutQuad
-            }
-        }
-
-        focus: true
-
-        appView: true
-
-        function moveLeft() {
-            state = "Normal";
-            // newModelIndex set by clicked breadcrumb
-            var oldModel = applicationsView.model;
-            applicationsView.model = applicationsView.newModel;
-
-            var oldModelIndex = model.rowForModel(oldModel);
-            // new model may not be a parent of old model (e.g. grandparent)
-            if (oldModelIndex === -1) {
-                listView.positionAtBeginning()
-            } else {
-                listView.currentIndex = oldModelIndex;
-                listView.positionViewAtIndex(oldModelIndex, ListView.Center);
-            }
-        }
-
-        function moveRight() {
-            state = "Normal";
-            activatedItem.activate()
-            applicationsView.listView.positionAtBeginning()
-        }
-
-        function clearBreadcrumbs() {
-            crumbModel.clear();
-            crumbModel.models = [];
-        }
-
-        onReset: appViewContainer.reset()
-
-        onAddBreadcrumb: {
-            crumbModel.append({"text": title, "depth": crumbModel.count+1})
-            crumbModel.models.push(model);
-        }
-
-        state: "Normal"
-        states: [
-            State {
-                name: "Normal"
-                PropertyChanges {
-                    target: applicationsView
-                    x: 0
-                    opacity: 1.0
-                }
-            },
-            State {
-                name: "OutgoingLeft"
-                PropertyChanges {
-                    target: applicationsView
-                    x: LayoutMirroring.enabled ? parent.width : -parent.width
-                    opacity: 0.0
-                }
-            },
-            State {
-                name: "OutgoingRight"
-                PropertyChanges {
-                    target: applicationsView
-                    x: LayoutMirroring.enabled ? -parent.width : parent.width
-                    opacity: 0.0
-                }
-            }
-        ]
-
-        transitions:  [
-            Transition {
-                to: "OutgoingLeft"
-                SequentialAnimation {
-                    // We need to cache the currentItem since the selection can move during animation,
-                    // and we want the item that has been clicked on, not the one that is under the
-                    // mouse once the animation is done
-                    ScriptAction {
-                        script: applicationsView.activatedItem = applicationsView.currentItem
-                    }
-                    NumberAnimation {
-                        properties: "x"
-                        easing.type: Easing.InQuad
-                        duration: PlasmaCore.Units.longDuration
-                    }
-                    ScriptAction {
-                        script: applicationsView.moveRight()
-                    }
-                }
-            },
-            Transition {
-                to: "OutgoingRight"
-                SequentialAnimation {
-                    NumberAnimation {
-                        properties: "x"
-                        easing.type: Easing.InQuad
-                        duration: PlasmaCore.Units.longDuration
-                    }
-                    ScriptAction {
-                        script: applicationsView.moveLeft()
-                    }
-                }
-            }
-        ]
-    }
-
-    MouseArea {
         anchors.fill: parent
 
-        acceptedButtons: Qt.BackButton
+        property bool animating: false
+        property int animationDuration: resetAnimationDurationTimer.interval
+        focus: true
 
-        onClicked: {
-            deactivateCurrentIndex()
+        interactive: contentHeight > height
+
+        move: moveTransition
+        moveDisplaced: moveTransition
+
+        onCountChanged: {
+            animationDuration = 0;
+            resetAnimationDurationTimer.start();
         }
+    }
+
+    Timer {
+        id: resetAnimationDurationTimer
+
+        // We don't want drag animation to be affected by "Animation speed" setting cause this is an active interaction (we want this enabled even for those who disabled animations)
+        // In other words: it's not a passive animation it should (roughly) follow the drag
+        interval: 150
+
+        onTriggered: applicationsView.animationDuration = interval - 20
     }
 
     // Displays text when application list gets updated
@@ -333,14 +170,12 @@ FocusScope {
         onRunningChanged: {
             if (running) {
                 updatedLabel.opacity = 1;
-                crumbContainer.opacity = 0.3;
-                applicationsView.listView.opacity = 0.3;
+                applicationsView.gridView.opacity = 0.3;
             }
         }
         onTriggered: {
             updatedLabel.opacity = 0;
-            crumbContainer.opacity = 1;
-            applicationsView.listView.opacity = 1;
+            applicationsView.gridView.opacity = 1;
             running = false;
         }
     }
@@ -364,4 +199,4 @@ FocusScope {
         rootModel.cleared.connect(refreshed);
     }
 
-} // appViewContainer
+}
