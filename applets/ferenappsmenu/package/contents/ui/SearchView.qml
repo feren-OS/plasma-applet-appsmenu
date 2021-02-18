@@ -84,9 +84,6 @@ FocusScope {
 
         focus: true
 
-        // we specifically only reverse search results (improves UX substantially)
-        upsideDown: mainTabGroup.state == "top"
-
         // set index to 0 when model *loads*
         onModelChanged: {
             if (model) {
