@@ -166,16 +166,14 @@ FocusScope {
 
         GridView {
             id: gridView
-            property int iconSize: PlasmaCore.Units.iconSizes.huge
+            property int iconSize: PlasmaCore.Units.iconSizes.large
             
             property int cellSize: iconSize + theme.mSize(theme.defaultFont).height
             + (2 * units.smallSpacing)
-            + (2 * Math.max(highlightItemSvg.margins.top + highlightItemSvg.margins.bottom,
-                            highlightItemSvg.margins.left + highlightItemSvg.margins.right))
 
             property bool animating: false
-            cellWidth: cellSize * 6
-            cellHeight: cellSize * 4
+            cellWidth: cellSize * 1.6
+            cellHeight: cellSize * 1.6
 
             property int cellMargin: Math.round(PlasmaCore.Units.smallSpacing * 1.5)
 
@@ -212,7 +210,7 @@ FocusScope {
             highlight: Item {
                 opacity: navigationMethod.state != "keyboard" || (keyboardNavigation.state == "RightColumn" && gridView.activeFocus) ? 1 : 0.5
                 PlasmaCore.FrameSvgItem {
-                    visible: gridView.currentItem && (keyboardNavigation.state == "RightColumn" || hoverArea.containsMouse)
+                    visible: gridView.currentItem && (keyboardNavigation.state == "RightColumn" || gridView.currentItem.containsMouse)
 
                     anchors.fill: parent
                     anchors.margins: gridView.cellMargin
