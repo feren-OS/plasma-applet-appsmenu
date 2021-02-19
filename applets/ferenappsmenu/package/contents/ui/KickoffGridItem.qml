@@ -30,9 +30,9 @@ Item {
     id: gridItem
 
     enabled: !model.disabled
-
+    
     width: GridView.view.cellWidth
-    height: width
+    height: GridView.view.cellHeight
 
     property int itemIndex: model.index
     property url url: model.url || ""
@@ -43,6 +43,7 @@ Item {
 
     property alias labelTruncated: label.truncated
     property string display: model.display
+    property string description: "description" in model ? " - " + model.description : ""
 
     Accessible.role: Accessible.MenuItem
     Accessible.name: model.display
@@ -69,6 +70,7 @@ Item {
         anchors.fill: parent
         anchors.margins: gridItem.GridView.view.cellMargin
         anchors.topMargin: gridItem.GridView.view.cellMargin + (plasmoid.configuration.gridAllowTwoLines && label.lineCount == 2 ? Math.round(label.height / 2 / 2) : 0)
+        
         Column {
             width: parent.width
             anchors.verticalCenter: parent.verticalCenter

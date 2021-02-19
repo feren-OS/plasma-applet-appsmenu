@@ -166,14 +166,16 @@ FocusScope {
 
         GridView {
             id: gridView
-            property int iconSize: PlasmaCore.Units.iconSizes.large
+            property int iconSize: PlasmaCore.Units.iconSizes.huge
+            
+            property int cellSize: iconSize + theme.mSize(theme.defaultFont).height
+            + (2 * units.smallSpacing)
+            + (2 * Math.max(highlightItemSvg.margins.top + highlightItemSvg.margins.bottom,
+                            highlightItemSvg.margins.left + highlightItemSvg.margins.right))
 
             property bool animating: false
-            cellWidth: gridView.iconSize + theme.mSize(theme.defaultFont).height
-                + (4 * PlasmaCore.Units.smallSpacing + Math.round(PlasmaCore.Units.smallSpacing * 1.5)) //item margins + spacing
-                + (2 * gridView.cellMargin) //highlight padding
-                + cellMargin * 2 //actual margins
-            cellHeight: cellWidth
+            cellWidth: cellSize * 6
+            cellHeight: cellSize * 4
 
             property int cellMargin: Math.round(PlasmaCore.Units.smallSpacing * 1.5)
 
@@ -203,14 +205,14 @@ FocusScope {
 
             PC3.ToolTip {
                 parent: gridView.currentItem ? gridView.currentItem : gridView
-                visible: itemGrid.parent == root.currentContentView && gridView.currentItem ? gridView.currentItem.labelTruncated && ((navigationMethod.state == "keyboard" && keyboardNavigation.state == "RightColumn" && itemGrid.activeFocus) || hoverArea.containsMouse) : false
-                text: gridView.currentItem ? gridView.currentItem.display : ""
+                visible: itemGrid.parent == root.currentContentView && gridView.currentItem && hoverArea.containsMouse     
+                text: gridView.currentItem ? gridView.currentItem.display + gridView.currentItem.description : ""
             }
 
             highlight: Item {
                 opacity: navigationMethod.state != "keyboard" || (keyboardNavigation.state == "RightColumn" && gridView.activeFocus) ? 1 : 0.5
                 PlasmaCore.FrameSvgItem {
-                    visible: gridView.currentItem
+                    visible: gridView.currentItem && (keyboardNavigation.state == "RightColumn" || hoverArea.containsMouse)
 
                     anchors.fill: parent
                     anchors.margins: gridView.cellMargin
