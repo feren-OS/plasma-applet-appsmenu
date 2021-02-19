@@ -74,7 +74,7 @@ Item {
         Column {
             width: parent.width
             anchors.verticalCenter: parent.verticalCenter
-            spacing: Math.round(PlasmaCore.Units.smallSpacing * 1.5) - (plasmoid.configuration.gridAllowTwoLines && label.lineCount == 2 ? Math.round(label.height / 2 / 2) : 0)
+            spacing: Math.round(PlasmaCore.Units.smallSpacing * 3.4) - (plasmoid.configuration.gridAllowTwoLines && label.lineCount == 2 ? Math.round(label.height / 2 / 2) : 0)
             PlasmaCore.IconItem {
                 id: icon
 
