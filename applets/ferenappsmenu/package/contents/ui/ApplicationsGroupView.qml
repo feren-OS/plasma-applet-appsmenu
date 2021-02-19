@@ -71,6 +71,7 @@ FocusScope {
     KickoffListView {
         id: applicationsView
         isManagerMode: true
+        isCategories: true
         anchors.fill: parent
 
         property Item activatedItem: null

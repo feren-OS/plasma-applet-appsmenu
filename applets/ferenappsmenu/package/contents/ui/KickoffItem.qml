@@ -45,6 +45,8 @@ Item {
     property bool appView: false
     property bool modelChildren: model.hasChildren || false
     property bool isCurrent: ListView.view.currentIndex === index;
+    
+    property bool isCategories: false
 
     property bool hasActionList: ((model.favoriteId !== null)
         || (("hasActionList" in model) && (model.hasActionList === true)))
@@ -129,16 +131,18 @@ Item {
         usesPlasmaTheme: false
 
         source: model.decoration
+        
+        visible: !isCategories
     }
 
     PlasmaComponents3.Label {
         id: titleElement
 
         anchors {
-            left: elementIcon.right
-            right: arrow.left
-            leftMargin: PlasmaCore.Units.smallSpacing * 4
-            rightMargin: PlasmaCore.Units.smallSpacing * 2
+            left: isCategories ? parent.left : elementIcon.right
+            right: parent.right
+            leftMargin: isCategories ? PlasmaCore.Units.smallSpacing * 6 : PlasmaCore.Units.smallSpacing * 4
+            rightMargin: PlasmaCore.Units.smallSpacing * 6
             verticalCenter: parent.verticalCenter
         }
         text: listItem.displayName
@@ -151,8 +155,8 @@ Item {
 
         anchors {
             left: parent.left
-            leftMargin: elementIcon.anchors.leftMargin + elementIcon.width + titleElement.anchors.leftMargin + titleElement.contentWidth + titleElement.anchors.rightMargin + PlasmaCore.Units.smallSpacing * 4
-            right: arrow.right
+            leftMargin: (isCategories ? 0 : elementIcon.anchors.leftMargin + elementIcon.width) + titleElement.anchors.leftMargin + titleElement.contentWidth + titleElement.anchors.rightMargin + PlasmaCore.Units.smallSpacing * 4
+            right: parent.right
             verticalCenter: parent.verticalCenter
         }
 
@@ -161,27 +165,5 @@ Item {
         font: theme.smallestFont
         elide: Text.ElideMiddle
         horizontalAlignment: Text.AlignRight
-    }
-
-    PlasmaCore.SvgItem {
-        id: arrow
-
-        anchors {
-            right: parent.right
-            rightMargin: PlasmaCore.Units.smallSpacing * 6
-            verticalCenter: parent.verticalCenter
-        }
-
-        width: visible ? PlasmaCore.Units.iconSizes.small : 0
-        height: width
-
-        visible: listItem.managesChildrenOutside || (model.hasChildren === true)
-        opacity: (listItem.ListView.view.currentIndex === index) ? 1.0 : 0.4
-
-        svg: PlasmaCore.Svg {
-            imagePath: "widgets/arrows"
-            size: "16x16"
-        }
-        elementId: (Qt.application.layoutDirection == Qt.RightToLeft) ? "left-arrow" : "right-arrow"
     }
 } // listItem

@@ -46,6 +46,7 @@ FocusScope {
 
     // left sidebar app list
     property bool isManagerMode: false
+    property bool isCategories: false
 
     // left sidebar places list
     property bool isExternalManagerMode: false
@@ -220,6 +221,7 @@ FocusScope {
             delegate: KickoffItem {
                 id: delegateItem
                 isManagerMode: view.isManagerMode
+                isCategories: view.isCategories
                 appView: view.appView
 
                 onReset: view.reset()

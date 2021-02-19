@@ -210,7 +210,7 @@ FocusScope {
             highlight: Item {
                 opacity: navigationMethod.state != "keyboard" || (keyboardNavigation.state == "RightColumn" && gridView.activeFocus) ? 1 : 0.5
                 PlasmaCore.FrameSvgItem {
-                    visible: gridView.currentItem && (keyboardNavigation.state == "RightColumn" || gridView.currentItem.containsMouse)
+                    visible: gridView.currentItem && (keyboardNavigation.state == "RightColumn" || hoverArea.containsMouse)
 
                     anchors.fill: parent
                     anchors.margins: gridView.cellMargin

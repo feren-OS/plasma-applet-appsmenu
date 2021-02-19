@@ -261,12 +261,7 @@ Item {
             //pages
             Item {
                 id: applicationsContentPage
-                property Item currentItem: contentTabGroup.isFavorites ? (plasmoid.configuration.favoritesDisplay == 0 ? favoritesGridPage : favoritesPage) : applicationsPage
-                FavoritesView {
-                    id: favoritesPage
-                    visible: parent.currentItem == favoritesPage
-                    anchors.fill: parent
-                }
+                property Item currentItem: contentTabGroup.isFavorites ? favoritesGridPage : applicationsPage
                 FavoritesGridView {
                     id: favoritesGridPage
                     visible: parent.currentItem == favoritesGridPage
