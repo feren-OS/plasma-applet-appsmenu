@@ -153,8 +153,8 @@ FocusScope {
                 }
             }
             id: listView
-            property int listBeginningMargin: currentSection == "" && (!view.appView || view.isManagerMode) ? PlasmaCore.Units.largeSpacing : 0 // don't add margin in the right app view or when sections are present
-            property int listEndMargin: (contentHeight + listBeginningMargin) > parent.height ? PlasmaCore.Units.largeSpacing : 0
+            property int listBeginningMargin: currentSection == "" && (!view.appView || view.isManagerMode) ? PlasmaCore.Units.smallSpacing * 3 : 0 // don't add margin in the right app view or when sections are present
+            property int listEndMargin: (contentHeight + listBeginningMargin) > parent.height ? PlasmaCore.Units.smallSpacing * 3 : 0
             clip: currentSection == "" && view.appView && !view.isManagerMode //clip only in the right app view where breadcrumb is present
 
             topMargin: view.upsideDown ? listEndMargin : listBeginningMargin
@@ -208,8 +208,8 @@ FocusScope {
                 PlasmaCore.FrameSvgItem {
                     anchors {
                         fill: parent
-                        leftMargin: PlasmaCore.Units.smallSpacing * 4
-                        rightMargin: PlasmaCore.Units.smallSpacing * 4
+                        leftMargin: PlasmaCore.Units.smallSpacing * 3
+                        rightMargin: PlasmaCore.Units.smallSpacing * 3
                     }
                     imagePath: "widgets/viewitem"
                     prefix: "hover"

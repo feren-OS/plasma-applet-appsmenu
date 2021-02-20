@@ -31,7 +31,7 @@ import org.kde.plasma.private.kicker 0.1 as Kicker
 
 Item {
     id: root
-    Layout.minimumWidth: Math.round(PlasmaCore.Units.gridUnit * 26 * 1.5)
+    Layout.minimumWidth: Math.round(PlasmaCore.Units.gridUnit * 26 * 1.55)
     Layout.maximumWidth: Layout.minimumWidth
 
     Layout.minimumHeight: PlasmaCore.Units.gridUnit * 30
@@ -132,7 +132,7 @@ Item {
         id: mainArea
         anchors.left: parent.left
         anchors.right:parent.right
-        anchors.rightMargin: Math.round(parent.width/1.5)
+        anchors.rightMargin: parent.width-250
         clip: true
         PlasmaComponents.TabGroup {
             id: mainTabGroup
@@ -238,7 +238,7 @@ Item {
         id: contentArea
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.leftMargin: mainArea.opacity == 0 ? 0 : Math.round(parent.width/3)
+        anchors.leftMargin: mainArea.opacity == 0 ? 0 : 250
         clip: true
         PlasmaComponents.TabGroup {
             id: contentTabGroup
@@ -266,11 +266,13 @@ Item {
                     id: favoritesGridPage
                     visible: parent.currentItem == favoritesGridPage
                     anchors.fill: parent
+                    anchors.topMargin: PlasmaCore.Units.smallSpacing * 1.5
                 }
                 ApplicationsView {
                     id: applicationsPage
                     visible: parent.currentItem == applicationsPage
                     anchors.fill: parent
+                    anchors.topMargin: PlasmaCore.Units.smallSpacing * 1.5
                 }
             }
 

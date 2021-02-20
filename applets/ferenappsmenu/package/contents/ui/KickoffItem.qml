@@ -29,9 +29,11 @@ Item {
     id: listItem
 
     enabled: !model.disabled
+    
+    property bool isCategories: false
 
     width: ListView.view.width
-    height: (PlasmaCore.Units.smallSpacing * 2) + Math.max(elementIcon.height+ PlasmaCore.Units.smallSpacing*2, titleElement.implicitHeight + PlasmaCore.Units.smallSpacing*2)
+    height: isCategories ? PlasmaCore.Units.smallSpacing + Math.max(PlasmaCore.Units.smallSpacing*2.5, titleElement.implicitHeight + PlasmaCore.Units.smallSpacing*2.5) : (PlasmaCore.Units.smallSpacing * 2) + Math.max(elementIcon.height+ PlasmaCore.Units.smallSpacing*2, titleElement.implicitHeight + PlasmaCore.Units.smallSpacing*2)
 
     signal reset
     signal actionTriggered(string actionId, variant actionArgument)
@@ -45,8 +47,6 @@ Item {
     property bool appView: false
     property bool modelChildren: model.hasChildren || false
     property bool isCurrent: ListView.view.currentIndex === index;
-    
-    property bool isCategories: false
 
     property bool hasActionList: ((model.favoriteId !== null)
         || (("hasActionList" in model) && (model.hasActionList === true)))
@@ -157,6 +157,7 @@ Item {
             left: parent.left
             leftMargin: (isCategories ? 0 : elementIcon.anchors.leftMargin + elementIcon.width) + titleElement.anchors.leftMargin + titleElement.contentWidth + titleElement.anchors.rightMargin + PlasmaCore.Units.smallSpacing * 4
             right: parent.right
+            rightMargin: PlasmaCore.Units.smallSpacing * 6
             verticalCenter: parent.verticalCenter
         }
 

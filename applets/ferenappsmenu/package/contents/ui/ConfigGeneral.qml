@@ -28,12 +28,8 @@ import org.kde.kirigami 2.5 as Kirigami
 ColumnLayout {
 
     property string cfg_icon: plasmoid.configuration.icon
-    property alias cfg_switchTabsOnHover: switchTabsOnHoverCheckbox.checked
-    property int cfg_favoritesDisplay: plasmoid.configuration.favoritesDisplay
     property alias cfg_gridAllowTwoLines: gridAllowTwoLines.checked
     property alias cfg_alphaSort: alphaSort.checked
-    property var cfg_systemFavorites: String(plasmoid.configuration.systemFavorites)
-    property int cfg_primaryActions: plasmoid.configuration.primaryActions
 
     Kirigami.FormLayout {
         Button {
@@ -91,12 +87,6 @@ ColumnLayout {
         }
 
         CheckBox {
-            id: switchTabsOnHoverCheckbox
-            Kirigami.FormData.label: i18n("General:")
-            text: i18n("Switch tabs on hover")
-        }
-
-        CheckBox {
             id: alphaSort
             text: i18n("Always sort applications alphabetically")
         }
@@ -111,50 +101,14 @@ ColumnLayout {
             Kirigami.FormData.isSection: true
         }
 
-        RadioButton {
-            id: showFavoritesInGrid
-            Kirigami.FormData.label: i18n("Show favorites:")
-            text: i18n("In a grid")
-            ButtonGroup.group: displayGroup
-            property int index: 0
-            checked: plasmoid.configuration.favoritesDisplay == index
-        }
-
-        RadioButton {
-            id: showFavoritesInList
-            text: i18n("In a list")
-            ButtonGroup.group: displayGroup
-            property int index: 1
-            checked: plasmoid.configuration.favoritesDisplay == index
-        }
-
         CheckBox {
             id: gridAllowTwoLines
-            text: i18n("Allow label to have two lines")
+            text: i18n("Allow labels to have two lines")
             enabled: showFavoritesInGrid.checked
         }
 
         Item {
             Kirigami.FormData.isSection: true
-        }
-
-        RadioButton {
-            id: powerActionsButton
-            Kirigami.FormData.label: i18n("Primary actions:")
-            text: i18n("Power actions")
-            ButtonGroup.group: radioGroup
-            property string actions: "suspend,hibernate,reboot,shutdown"
-            property int index: 0
-            checked: plasmoid.configuration.primaryActions == index
-        }
-
-        RadioButton {
-            id: sessionActionsButton
-            text: i18n("Session actions")
-            ButtonGroup.group: radioGroup
-            property string actions: "lock-screen,logout,save-session,switch-user"
-            property int index: 1
-            checked: plasmoid.configuration.primaryActions == index
         }
     }
 
@@ -163,16 +117,6 @@ ColumnLayout {
         onCheckedButtonChanged: {
             if (checkedButton) {
                 cfg_favoritesDisplay = checkedButton.index
-            }
-        }
-    }
-
-    ButtonGroup {
-        id: radioGroup
-        onCheckedButtonChanged: {
-            if (checkedButton) {
-                cfg_primaryActions = checkedButton.index
-                cfg_systemFavorites = checkedButton.actions
             }
         }
     }
