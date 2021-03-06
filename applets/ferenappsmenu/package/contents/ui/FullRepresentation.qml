@@ -38,7 +38,6 @@ Item {
     Layout.maximumHeight: Layout.minimumHeight
 
     property string previousState
-    property bool switchTabsOnHover: plasmoid.configuration.switchTabsOnHover
     property Item currentView: mainTabGroup.currentTab.keyNavDown ? mainTabGroup.currentTab : mainTabGroup.currentTab.item
     property Item currentContentView: contentTabGroup.currentItem.keyNavDown ? contentTabGroup.currentItem : contentTabGroup.currentItem.item
 

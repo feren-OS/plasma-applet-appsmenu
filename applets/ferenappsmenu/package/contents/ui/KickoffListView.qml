@@ -55,8 +55,6 @@ FocusScope {
 
     // Accessibility NOTE: We don't name panes because doing so would be annoying and redundant
 
-    property bool upsideDown: false
-
     function incrementCurrentIndex() {
         if (listView.currentIndex < listView.count - 1) {
             listView.incrementCurrentIndex();
@@ -74,19 +72,11 @@ FocusScope {
         }
     }
     function keyNavDown() {
-        if (upsideDown) {
-            return view.decrementCurrentIndex()
-        } else {
-            return view.incrementCurrentIndex()
-        }
+        return view.incrementCurrentIndex()
     }
 
     function keyNavUp() {
-        if (upsideDown) {
-            return view.incrementCurrentIndex()
-        } else {
-            return view.decrementCurrentIndex()
-        }
+        return view.decrementCurrentIndex()
     }
 
     Connections {
@@ -157,12 +147,12 @@ FocusScope {
             property int listEndMargin: (contentHeight + listBeginningMargin) > parent.height ? PlasmaCore.Units.smallSpacing * 3 : 0
             clip: currentSection == "" && view.appView && !view.isManagerMode //clip only in the right app view where breadcrumb is present
 
-            topMargin: view.upsideDown ? listEndMargin : listBeginningMargin
-            bottomMargin: view.upsideDown ? listBeginningMargin : listEndMargin
+            topMargin: listBeginningMargin
+            bottomMargin: listEndMargin
 
             focus: true
 
-            verticalLayoutDirection: view.upsideDown ? ListView.BottomToTop : ListView.TopToBottom
+            verticalLayoutDirection: ListView.TopToBottom
 
             // Currently narrator only notifies about focus changes
             // That means that if item has focus narrator won't notify about name/description changes, like count changing
@@ -192,11 +182,7 @@ FocusScope {
                 // positionViewAtBeginning doesn't account for margins
                 // move content manually only if it overflows
                 if (visibleArea.heightRatio !== 1.0) {
-                    if (view.upsideDown) {
-                        contentY += topMargin;
-                    } else {
-                        contentY -= topMargin;
-                    }
+                    contentY -= topMargin;
                 }
                 currentIndex = 0;
             }
