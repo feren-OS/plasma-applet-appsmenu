@@ -56,10 +56,10 @@ Item {
     }
 
     function actionTriggered(actionId, actionArgument) {
-        var close = (Tools.triggerAction(GridView.view.model, model.index, actionId, actionArgument) === true);
-
-        if (close) {
-            plasmoid.expanded = false;
+        if (Tools.triggerAction(GridView.view.model, model.index, actionId, actionArgument) === true) {
+            if (!gridItem.managesChildrenOutside) {
+                plasmoid.expanded = false;
+            }
         }
     }
     function activate() {

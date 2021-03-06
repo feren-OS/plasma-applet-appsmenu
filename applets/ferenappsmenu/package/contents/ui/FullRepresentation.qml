@@ -122,6 +122,9 @@ Item {
         id: header
         anchors.left: parent.left
         anchors.right: parent.right
+        anchors.top: root.top
+        height: header.implicitHeight
+        location: PlasmaExtras.PlasmoidHeading.Location.Header
         Component.onCompleted: {
             header.input.forceActiveFocus();
         }
@@ -132,6 +135,8 @@ Item {
         anchors.left: parent.left
         anchors.right:parent.right
         anchors.rightMargin: parent.width-250
+        anchors.top: header.bottom
+        anchors.bottom: root.bottom
         clip: true
         PlasmaComponents.TabGroup {
             id: mainTabGroup
@@ -155,67 +160,15 @@ Item {
                     return "bottom";
                 }
             }
-            states: [
-                State {
-                    name: "top"
-                    AnchorChanges {
-                        target: header
-                        anchors {
-                            top: undefined
-                            bottom: root.bottom
-                        }
-                    }
-                    PropertyChanges {
-                        target: header
-                        height: header.implicitHeight
-                        location: PlasmaExtras.PlasmoidHeading.Location.Footer
-                    }
-                    AnchorChanges {
-                        target: mainArea
-                        anchors {
-                            top: root.top
-                            bottom: header.top
-                        }
-                    }
-                    AnchorChanges {
-                        target: contentArea
-                        anchors {
-                            top: parent.top
-                            bottom: header.top
-                        }
-                    }
-                },
-                State {
-                    name: "bottom"
-                    AnchorChanges {
-                        target: header
-                        anchors {
-                            top: root.top
-                            bottom: undefined
-                        }
-                    }
-                    PropertyChanges {
-                        target: header
-                        height: header.implicitHeight
-                        location: PlasmaExtras.PlasmoidHeading.Location.Header
-                    }
-                    AnchorChanges {
-                        target: mainArea
-                        anchors {
-                            top: header.bottom
-                            bottom: root.bottom
-                        }
-                    }
-                    AnchorChanges {
-                        target: contentArea
-                        anchors {
-                            top: header.bottom
-                            bottom: parent.bottom
-                        }
-                    }
-                }
-            ]
         } // mainTabGroup
+    }
+
+    Connections {
+        target: plasmoid
+        function onExpandedChanged() {
+            header.input.forceActiveFocus();
+            switchToInitial();
+        }
     }
 
     Connections {
@@ -229,7 +182,6 @@ Item {
                 applicationsPage.appModelChange()
                 contentTabGroup.isFavorites = false
             }
-
         }
     }
 
@@ -238,6 +190,8 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.leftMargin: mainArea.opacity == 0 ? 0 : 250
+        anchors.top: header.bottom
+        anchors.bottom: root.bottom
         clip: true
         PlasmaComponents.TabGroup {
             id: contentTabGroup
