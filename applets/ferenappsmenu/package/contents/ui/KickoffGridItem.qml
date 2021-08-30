@@ -43,7 +43,7 @@ Item {
 
     property alias labelTruncated: label.truncated
     property string display: model.display
-    property string description: "description" in model ? " - " + model.description : ""
+    property string description: "description" in model ? model.description : ""
 
     Accessible.role: Accessible.MenuItem
     Accessible.name: model.display

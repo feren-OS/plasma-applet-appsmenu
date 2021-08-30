@@ -15,7 +15,8 @@
         </entry>
         <entry name="systemFavorites" type="StringList">
             <label>List of system action favorites.</label>
-            <default>switch-user,lock-screen,logout,shutdown</default>
+<!--        <default>switch-user,lock-screen,shutdown</default> -->
+            <default>lock-screen,shutdown</default>
         </entry>
         <entry name="favoritesPortedToKAstats" type="Bool">
             <label>Are the favorites ported to use KActivitiesStats to allow per-activity favorites</label>
@@ -28,6 +29,22 @@
         <entry name="gridAllowTwoLines" type="Bool">
             <label>Whether to allow showing two lines in grid view.</label>
             <default>true</default>
+        </entry>
+        <entry name="fullScreen" type="Bool">
+            <label>Use full screen.</label>
+            <default>false</default>
+        </entry>
+        <entry name="menuright" type="Bool">
+            <label>Show categories on right side.</label>
+            <default>false</default>
+        </entry>
+        <entry name="prefshowallapps" type="Bool">
+            <label>Show category all apps.</label>
+            <default>false</default>
+        </entry>
+        <entry name="prefshowpowersession" type="Bool">
+            <label>Show category power session</label>
+            <default>false</default>
         </entry>
         <entry name="alphaSort" type="Bool">
             <label>Whether to sort menu contents alphabetically or use manual/system sort order.</label>

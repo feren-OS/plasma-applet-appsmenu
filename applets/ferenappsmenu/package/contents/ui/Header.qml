@@ -57,58 +57,6 @@ PlasmaExtras.PlasmoidHeading {
         // looks visually balanced that way
         spacing: Math.round(PlasmaCore.Units.smallSpacing * 2.5)
         
-        PlasmaComponents.RoundButton {
-            id: avatarButton
-            visible: KQuickAddons.KCMShell.authorize("kcm_users.desktop").length > 0
-
-            flat: true
-
-            Layout.preferredWidth: PlasmaCore.Units.gridUnit * 2
-            Layout.preferredHeight: PlasmaCore.Units.gridUnit * 2
-
-            Accessible.name: kuser.fullName
-            Accessible.description: i18n("Go to user settings")
-
-            Kirigami.Avatar {
-                source: kuser.faceIconUrl
-                name: kuser.fullName
-                anchors {
-                    fill: parent
-                    margins: PlasmaCore.Units.smallSpacing
-                }
-                // NOTE: for some reason Avatar eats touch events even though it shouldn't
-                // Ideally we'd be using Avatar but it doesn't have proper key nav yet
-                // see https://invent.kde.org/frameworks/kirigami/-/merge_requests/218
-                actions.main: Kirigami.Action {
-                    text: avatarButton.Accessible.description
-                    onTriggered: avatarButton.clicked()
-                }
-                // no keyboard nav
-                activeFocusOnTab: false
-                // ignore accessibility (done by the button)
-                Accessible.ignored: true
-                
-                PlasmaComponents.ToolTip {
-                    text: kuser.fullName
-                }
-            }
-
-            onClicked: {
-                KQuickAddons.KCMShell.openSystemSettings("kcm_users")
-            }
-
-            Keys.onPressed: {
-                // In search on backtab focus on search pane
-                if (event.key == Qt.Key_Backtab && (root.state == "Search" || mainTabGroup.state == "top")) {
-                    navigationMethod.state = "keyboard"
-                    keyboardNavigation.state = "RightColumn"
-                    root.currentContentView.forceActiveFocus()
-                    event.accepted = true;
-                    return;
-                }
-            }
-        }
-
         PlasmaComponents.TextField {
             id: queryField
 
@@ -136,16 +84,13 @@ PlasmaExtras.PlasmoidHeading {
 
             PlasmaComponents.ToolButton {
                 // so that it lets the buttons elide...
-                //Layout.fillWidth: true
+                Layout.fillWidth: true
                 // ... but does not make the buttons grow
-                //Layout.maximumWidth: implicitWidth
+                Layout.maximumWidth: implicitWidth
+                text: model.display
                 icon.name: model.decoration
                 onClicked: {
                     systemFavorites.trigger(index, "", "")
-                }
-                
-                PlasmaComponents.ToolTip {
-                    text: model.display
                 }
             }
         }

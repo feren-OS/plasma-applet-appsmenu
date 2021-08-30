@@ -5,7 +5,8 @@
     Copyright (C) 2013 2014 David Edmundson <davidedmundson@kde.org>
     Copyright 2014 Sebastian Kügler <sebas@kde.org>
     Copyright (C) 2021 by Mikel Johnson <mikel5764@gmail.com>
-
+    Copyright (C) 2021 by Bruno Goncalves <bigbruno@gmail.com>
+ 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
@@ -26,15 +27,16 @@ import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.plasma.components 2.0 as PlasmaComponents // for TabGroup
 import org.kde.plasma.components 3.0 as PC3
 import org.kde.plasma.extras 2.0 as PlasmaExtras
+import QtQuick.Window 2.2
 
 import org.kde.plasma.private.kicker 0.1 as Kicker
 
 Item {
     id: root
-    Layout.minimumWidth: Math.round(PlasmaCore.Units.gridUnit * 26 * 1.55)
+    Layout.minimumWidth: (plasmoid.configuration.fullScreen == false) ? Math.round(PlasmaCore.Units.gridUnit * 32 * 1.55) : Screen.desktopAvailableWidth
     Layout.maximumWidth: Layout.minimumWidth
-
-    Layout.minimumHeight: PlasmaCore.Units.gridUnit * 30
+ 
+    Layout.minimumHeight: (plasmoid.configuration.fullScreen == false) ? PlasmaCore.Units.gridUnit * 30 : Screen.desktopAvailableHeight
     Layout.maximumHeight: Layout.minimumHeight
 
     property string previousState
@@ -74,12 +76,12 @@ Item {
         showSeparators: false
         showTopLevelItems: false
 
-        showAllApps: true
+        showAllApps: plasmoid.configuration.prefshowallapps
         showAllAppsCategorized: false
         showRecentApps: false
         showRecentDocs: false
         showRecentContacts: false
-        showPowerSession: false
+        showPowerSession: plasmoid.configuration.prefshowpowersession
         showFavoritesPlaceholder: true
 
         Component.onCompleted: {
@@ -132,11 +134,13 @@ Item {
 
     Item {
         id: mainArea
-        anchors.left: parent.left
-        anchors.right:parent.right
-        anchors.rightMargin: parent.width-250
+        anchors.left: (plasmoid.configuration.menuright == false) ? parent.left : parent.right
+        anchors.leftMargin: (plasmoid.configuration.menuright == false) ? 0 : - 230
+        anchors.right: (plasmoid.configuration.menuright == false) ? parent.right : header.right
+        anchors.rightMargin: (plasmoid.configuration.menuright == false) ? parent.width-230 : 0
         anchors.top: header.bottom
         anchors.bottom: root.bottom
+        width: 230
         clip: true
         PlasmaComponents.TabGroup {
             id: mainTabGroup
@@ -189,7 +193,8 @@ Item {
         id: contentArea
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.leftMargin: mainArea.opacity == 0 ? 0 : 250
+        anchors.leftMargin: (plasmoid.configuration.menuright == false) ? mainArea.opacity == 0 ? 0 : 230 :0
+        anchors.rightMargin: (plasmoid.configuration.menuright == true) ? mainArea.opacity == 0 ? 0 : 230 :0
         anchors.top: header.bottom
         anchors.bottom: root.bottom
         clip: true

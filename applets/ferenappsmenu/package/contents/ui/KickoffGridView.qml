@@ -22,6 +22,7 @@ import QtQuick 2.4
 
 import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.plasma.components 3.0 as PC3
+import "code/tools.js" as Tools
 
 FocusScope {
     id: itemGrid
@@ -172,7 +173,7 @@ FocusScope {
             + (2 * units.smallSpacing)
 
             property bool animating: false
-            cellWidth: cellSize * 1.6
+            cellWidth: cellSize * 2.4
             cellHeight: cellSize * 1.6
 
             property int cellMargin: Math.round(PlasmaCore.Units.smallSpacing * 1.5)
@@ -204,7 +205,7 @@ FocusScope {
             PC3.ToolTip {
                 parent: gridView.currentItem ? gridView.currentItem : gridView
                 visible: itemGrid.parent == root.currentContentView && gridView.currentItem && hoverArea.containsMouse     
-                text: gridView.currentItem ? gridView.currentItem.display + gridView.currentItem.description : ""
+                text: gridView.currentItem ? gridView.currentItem.display : ""
             }
 
             highlight: Item {
@@ -315,6 +316,7 @@ FocusScope {
                             } else {
                                 dragHelper.dragIconSize = PlasmaCore.Units.iconSizes.medium
                                 dragHelper.startDrag(kickoff, pressed.url, pressed.decoration);
+                            plasmoid.expanded = false;
                             }
                             pressed = null;
                             pressX = -1;
@@ -339,6 +341,11 @@ FocusScope {
                         positionChanged(mouse);
                     }
                 }
+                    onClicked: {
+            if (mouse.button == Qt.LeftButton) {
+                plasmoid.expanded = false;
+            }
+        }
             }
         }
     }

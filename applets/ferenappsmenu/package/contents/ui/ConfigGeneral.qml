@@ -1,6 +1,7 @@
 /*
  *  Copyright 2013 David Edmundson <davidedmundson@kde.org>
  *  Copyright (C) 2021 by Mikel Johnson <mikel5764@gmail.com>
+ *  Copyright (C) 2021 by Bruno Goncalves <bigbruno@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -30,6 +31,11 @@ ColumnLayout {
     property string cfg_icon: plasmoid.configuration.icon
     property alias cfg_gridAllowTwoLines: gridAllowTwoLines.checked
     property alias cfg_alphaSort: alphaSort.checked
+    property alias cfg_fullScreen: fullScreen.checked
+    property alias cfg_menuright: menuright.checked
+    property alias cfg_prefshowallapps: prefshowallapps.checked
+    property alias cfg_prefshowpowersession: prefshowpowersession.checked
+
 
     Kirigami.FormLayout {
         Button {
@@ -99,6 +105,26 @@ ColumnLayout {
 
         Item {
             Kirigami.FormData.isSection: true
+        }
+
+        CheckBox {
+            id: fullScreen
+            text: i18n("Open in full screen mode")
+        }
+
+        CheckBox {
+            id: menuright
+            text: i18n("Show categories on right side")
+        }
+
+        CheckBox {
+            id: prefshowallapps
+            text: i18n("Show category all apps")
+        }
+
+        CheckBox {
+            id: prefshowpowersession
+            text: i18n("Show category power session")
         }
 
         CheckBox {
