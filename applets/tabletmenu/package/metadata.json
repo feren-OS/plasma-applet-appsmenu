@@ -112,10 +112,10 @@
         "Description[en_GB]": "Start applications installed on your system from here",
         "EnabledByDefault": true,
         "Icon": "start-here-kde",
-        "Id": "org.feren.appsmenu",
+        "Id": "org.feren.appsmenuhybrid",
         "License": "GPL-2.0+",
-        "Name": "Applications Menu",
-        "Name[en_GB]": "Applications Menu",
+        "Name": "Applications Screen",
+        "Name[en_GB]": "Applications Screen",
         "ServiceTypes": [
             "Plasma/Applet"
         ],

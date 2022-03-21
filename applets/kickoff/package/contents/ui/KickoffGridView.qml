@@ -60,47 +60,30 @@ EmptyPage {
      */
     GridView {
         id: view
-        readonly property real availableWidth: width - leftMargin - rightMargin
-        readonly property real availableHeight: height - topMargin - bottomMargin
+        readonly property real availableWidth: parent.width - leftMargin - rightMargin - leftMargin - rightMargin - verticalScrollBar.implicitWidth
+        readonly property real availableHeight: parent.width - topMargin - bottomMargin - topMargin - bottomMargin
         readonly property int columns: Math.floor(availableWidth / cellWidth)
         readonly property int rows: Math.floor(availableHeight / cellHeight)
         property bool movedWithKeyboard: false
 
         // NOTE: parent is the contentItem that Control subclasses automatically
         // create when no contentItem is set, but content is added.
-        height: parent.height
-        // There are lots of ways to try to center the content of a GridView
-        // and many of them have bad visual flaws. This way works pretty well.
-        // Not center aligning when there might be a scrollbar to keep click target positions consistent.
-        anchors.horizontalCenter: plasmoid.rootItem.mayHaveGridWithScrollBar ? undefined : parent.horizontalCenter
-        anchors.horizontalCenterOffset: if (plasmoid.rootItem.mayHaveGridWithScrollBar) {
-            if (root.mirrored) {
-                return verticalScrollBar.implicitWidth/2
-            } else {
-                return -verticalScrollBar.implicitWidth/2
-            }
-        } else {
-            return 0
-        }
-        width: Math.min(parent.width, Math.floor((parent.width - leftMargin - rightMargin) / cellWidth) * cellWidth + leftMargin + rightMargin)
+        height: implicitHeight
+        width: implicitWidth
+        anchors.right: LayoutMirroring.enabled ? parent.right : undefined
+        anchors.left: LayoutMirroring.enabled ? undefined : parent.left
 
         Accessible.description: i18n("Grid with %1 rows, %2 columns", rows, columns) // can't use i18np here
 
 
-        implicitWidth: {
-            let w = view.cellWidth * 4 + leftMargin + rightMargin
-            if (plasmoid.rootItem.mayHaveGridWithScrollBar) {
-                w += verticalScrollBar.implicitWidth
-            }
-            return w
-        }
+        implicitWidth: view.cellWidth * 4 + leftMargin + rightMargin + verticalScrollBar.implicitWidth
         implicitHeight: view.cellHeight * 4 + topMargin + bottomMargin
 
         leftMargin: plasmoid.rootItem.backgroundMetrics.leftPadding
         rightMargin: plasmoid.rootItem.backgroundMetrics.rightPadding
 
-        cellHeight: KickoffSingleton.gridCellSize
-        cellWidth: KickoffSingleton.gridCellSize
+        cellHeight: KickoffSingleton.gridCellSize + plasmoid.rootItem.backgroundMetrics.topPadding
+        cellWidth: KickoffSingleton.gridCellSize + plasmoid.rootItem.backgroundMetrics.leftPadding
 
         currentIndex: count > 0 ? 0 : -1
         focus: true
@@ -126,8 +109,7 @@ EmptyPage {
             height: view.cellHeight
             imagePath: "widgets/viewitem"
             prefix: "hover"
-            visible: plasmoid.rootItem.contentArea !== root
-                || ActionMenu.menu.status !== 1
+            visible: plasmoid.rootItem.contentArea !== root || ActionMenu.menu.status !== 1
         }
 
         delegate: KickoffItemDelegate {

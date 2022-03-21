@@ -15,30 +15,14 @@
         </entry>
         <entry name="systemFavorites" type="StringList">
             <label>List of system action favorites.</label>
-            <default>switch-user,lock-screen,logout,shutdown</default>
+            <default>lock-screen,logout,shutdown</default>
         </entry>
         <entry name="favoritesPortedToKAstats" type="Bool">
             <label>Are the favorites ported to use KActivitiesStats to allow per-activity favorites</label>
             <default>false</default>
         </entry>
-        <entry name="systemApplications" type="StringList">
-            <label>List of applications at the top of the "Computer" tab.</label>
-            <default>systemsettings.desktop,org.kde.kinfocenter.desktop,org.kde.discover.desktop</default>
-        </entry>
         <entry name="alphaSort" type="Bool">
             <label>Whether to sort menu contents alphabetically or use manual/system sort order.</label>
-            <default>false</default>
-        </entry>
-        <entry name="pin" type="Bool">
-            <label>Whether the popup should remain open when another window is activated</label>
-            <default>false</default>
-        </entry>
-        <entry name="showActionButtonCaptions" type="Bool">
-            <label>Whether to display captions ("shut down", "log out", etc.) for the footer action buttons</label>
-            <default>true</default>
-        </entry>
-        <entry name="fullScreen" type="Bool">
-            <label>Whether to use Tablet Mode menu or not</label>
             <default>false</default>
         </entry>
     </group>

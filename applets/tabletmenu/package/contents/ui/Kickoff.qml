@@ -41,7 +41,7 @@ Item {
         flat: true // have categories, but no subcategories
         sorted: plasmoid.configuration.alphaSort
         showSeparators: false
-        showTopLevelItems: true
+        showTopLevelItems: false
 
         showAllApps: true
         showAllAppsCategorized: false

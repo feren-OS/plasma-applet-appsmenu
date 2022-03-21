@@ -26,8 +26,8 @@ EmptyPage {
     topPadding: 0
     bottomPadding: -plasmoid.rootItem.backgroundMetrics.bottomPadding
 
-    Layout.minimumWidth: plasmoid.configuration.fullScreen ? Screen.desktopAvailableWidth : implicitWidth
-    Layout.minimumHeight: plasmoid.configuration.fullScreen ? Screen.desktopAvailableHeight : implicitHeight
+    Layout.minimumWidth: implicitWidth
+    Layout.minimumHeight: implicitHeight
 
     /* NOTE: Important things to know about keyboard input handling:
      *
@@ -55,7 +55,6 @@ EmptyPage {
 
     header: Header {
         id: header
-        preferredNameAndIconWidth: normalPage.preferredSideBarWidth
         Binding {
             target: plasmoid.rootItem
             property: "header"

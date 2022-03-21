@@ -17,7 +17,6 @@ ColumnLayout {
 
     property string cfg_icon: plasmoid.configuration.icon
     property alias cfg_alphaSort: alphaSort.checked
-    property alias cfg_fullScreen: fullScreen.checked
 
     Kirigami.FormLayout {
         Button {
@@ -83,19 +82,6 @@ ColumnLayout {
             icon.name: "settings-configure"
             text: i18n("Configure enabled search plugins")
             onClicked: KQuickAddons.KCMShell.openSystemSettings("kcm_plasmasearch")
-        }
-
-        Item {
-            Kirigami.FormData.isSection: true
-        }
-
-        Item {
-            Kirigami.FormData.isSection: true
-        }
-
-        CheckBox {
-            id: fullScreen
-            text: i18n("Use Tablet Mode style")
         }
     }
 

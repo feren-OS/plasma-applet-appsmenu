@@ -74,6 +74,7 @@ FocusScope {
         implicitHeight: implicitWidth
         elementId: "vertical-line"
         svg: KickoffSingleton.lineSvg
+        visible: false
     }
     Loader {
         id: contentAreaLoader

@@ -25,7 +25,6 @@ PlasmaExtras.PlasmoidHeading {
     property alias searchText: searchField.text
     property Item configureButton: configureButton
     property Item avatar: avatar
-    property real preferredNameAndIconWidth: 0
 
     Kicker.SystemModel {
         id: systemModel

@@ -141,16 +141,19 @@ T.ItemDelegate {
             animated: false
             usesPlasmaTheme: false
             source: root.decoration || root.icon.name || root.icon.source
+            visible: !root.isCategory
         }
         PC3.Label {
             id: label
             Layout.alignment: root.textUnderIcon ? Qt.AlignHCenter | Qt.AlignTop : Qt.AlignLeft | Qt.AlignVCenter
             Layout.fillWidth: true
             Layout.preferredHeight: root.textUnderIcon && lineCount === 1 ? implicitHeight * 2 : implicitHeight
+            anchors.left: root.isCategory ? root.contentItem.left : undefined
+            anchors.leftMargin: root.isCategory ? PlasmaCore.Units.smallSpacing * 2 : undefined
             text: root.text
             elide: Text.ElideRight
             horizontalAlignment: root.textUnderIcon ? Text.AlignHCenter : Text.AlignLeft
-            verticalAlignment: root.textUnderIcon ? Text.AlignTop : Text.AlignVCenter
+            verticalAlignment: root.textUnderIcon ? Text.AlignVCenter : Text.AlignVCenter
             maximumLineCount: 2
             wrapMode: Text.Wrap
             textFormat: root.model && root.model.isMultilineText ? Text.StyledText : Text.PlainText
@@ -248,12 +251,10 @@ T.ItemDelegate {
     PC3.ToolTip.text: {
         if (label.truncated && descriptionLabel.truncated) {
             return `${text} (${description})`
-        } else if (descriptionLabel.truncated) {
-            return description
         } else {
-            return text
+            return description
         }
     }
-    PC3.ToolTip.visible: mouseArea.containsMouse && ((label.visible && label.truncated) || (descriptionLabel.visible && descriptionLabel.truncated))
+    PC3.ToolTip.visible: mouseArea.containsMouse && PC3.ToolTip.text != ""
     PC3.ToolTip.delay: Kirigami.Units.toolTipDelay
 }

@@ -26,8 +26,8 @@ EmptyPage {
     topPadding: 0
     bottomPadding: -plasmoid.rootItem.backgroundMetrics.bottomPadding
 
-    Layout.minimumWidth: plasmoid.configuration.fullScreen ? Screen.desktopAvailableWidth : implicitWidth
-    Layout.minimumHeight: plasmoid.configuration.fullScreen ? Screen.desktopAvailableHeight : implicitHeight
+    Layout.minimumWidth: Screen.desktopAvailableWidth
+    Layout.minimumHeight: Screen.desktopAvailableHeight
 
     /* NOTE: Important things to know about keyboard input handling:
      *
@@ -55,7 +55,6 @@ EmptyPage {
 
     header: Header {
         id: header
-        preferredNameAndIconWidth: normalPage.preferredSideBarWidth
         Binding {
             target: plasmoid.rootItem
             property: "header"
@@ -71,6 +70,7 @@ EmptyPage {
         // Not using a component to prevent it from being destroyed
         initialItem: NormalPage {
             id: normalPage
+            implicitWidth: Screen.desktopAvailableWidth
             objectName: "normalPage"
         }
 
@@ -80,7 +80,7 @@ EmptyPage {
                 id: searchView
                 objectName: "searchView"
                 mainContentView: true
-                implicitWidth: normalPage.implicitWidth
+                implicitWidth: Screen.desktopAvailableWidth
                 implicitHeight: normalPage.implicitHeight
                 // Forces the function be re-run every time runnerModel.count changes.
                 // This is absolutely necessary to make the search view work reliably.
