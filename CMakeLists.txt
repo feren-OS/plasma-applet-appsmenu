@@ -216,28 +216,9 @@ configure_file(config-unix.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-unix.h )
 configure_file(config-X11.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-X11.h)
 configure_file(config-runtime.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-runtime.h)
 
-plasma_install_package(desktoppackage org.kde.plasma.desktop shells shell)
-
 add_definitions(-DQT_NO_URL_CAST_FROM_STRING -DQT_NO_FOREACH)
 
-add_subdirectory(layout-templates)
-
-add_subdirectory(doc)
-add_subdirectory(runners)
-add_subdirectory(containments)
-add_subdirectory(toolboxes)
 add_subdirectory(applets)
-add_subdirectory(kcms)
-add_subdirectory(knetattach)
-if(KAccounts_FOUND AND AccountsQt5_FOUND)
-    add_subdirectory(attica-kde)
-endif()
-add_subdirectory(imports/activitymanager/)
-add_subdirectory(solid-device-automounter)
-if(X11_Xkb_FOUND AND XCB_XKB_FOUND)
-    add_subdirectory(kaccess)
-endif()
-install(FILES org.kde.plasmashell.metainfo.xml DESTINATION ${KDE_INSTALL_METAINFODIR})
 
 # add clang-format target for all our real source files
 file(GLOB_RECURSE ALL_CLANG_FORMAT_SOURCE_FILES *.cpp *.h)
