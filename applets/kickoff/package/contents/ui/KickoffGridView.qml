@@ -61,7 +61,7 @@ EmptyPage {
     GridView {
         id: view
         readonly property real availableWidth: parent.width - leftMargin - rightMargin - leftMargin - rightMargin - verticalScrollBar.implicitWidth
-        readonly property real availableHeight: parent.width - topMargin - bottomMargin - topMargin - bottomMargin
+        readonly property real availableHeight: parent.height - topMargin - bottomMargin - topMargin - bottomMargin
         readonly property int columns: Math.floor(availableWidth / cellWidth)
         readonly property int rows: Math.floor(availableHeight / cellHeight)
         property bool movedWithKeyboard: false

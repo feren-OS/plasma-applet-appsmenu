@@ -27,7 +27,7 @@ EmptyPage {
     bottomPadding: -plasmoid.rootItem.backgroundMetrics.bottomPadding
 
     Layout.minimumWidth: implicitWidth
-    Layout.minimumHeight: implicitHeight
+    Layout.minimumHeight: implicitHeight + (38 * PlasmaCore.Units.devicePixelRatio)
 
     /* NOTE: Important things to know about keyboard input handling:
      *
